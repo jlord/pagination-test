@@ -105,8 +105,14 @@
 	  function showInfo(data) {
 	  	gData = data
 	  	// make the table, and the search bar
-	  	Sheetsee.makeTable(gData, "#hackSpotsTable", 10)
-	  	Sheetsee.initiateTableFilter(gData, "#tableFilter", "#hackSpotsTable")
+	  	var tableOptions = {
+	  											"data": gData, 
+	  											"tableDiv": "#hackSpotsTable", 
+	  											"pagination": 10,
+	  											"filterDiv": "#tableFilter"
+	  											 }
+	  	Sheetsee.makeTable(tableOptions)
+	  	Sheetsee.initiateTableFilter(tableOptions)
  	}
 
 	</script>

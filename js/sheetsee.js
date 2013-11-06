@@ -6,44 +6,47 @@ function exportFunctions(exports) {
 //
 // // // // // // // // // // // // // // // // // // // // // // // //  // //
 
-function initiateTableFilter(data, filterDiv, tableDiv) {
+function initiateTableFilter(opts) {
+  var origData = opts.data
   $('.clear').on("click", function() { 
     $(this.id + ".noMatches").css("visibility", "hidden")
-    $(this.id + filterDiv).val("")
-    makeTable(data, tableDiv)
+    $(this.id + opts.filterDiv).val("")
+    opts.data = origData
+    makeTable(opts)
   })
-  $(filterDiv).keyup(function(e) {
+  $(opts.filterDiv).keyup(function(e) {
     var text = $(e.target).val()
-    searchTable(data, text, tableDiv)
+    searchTable(opts, text)
   })
 }
 
-function searchTable(data, searchTerm, tableDiv) {
+function searchTable(opts, searchTerm) {
   var filteredList = []
-  data.forEach(function(object) {
+  opts.data.forEach(function(object) {
     var stringObject = JSON.stringify(object).toLowerCase()
     if (stringObject.match(searchTerm.toLowerCase())) filteredList.push(object)
   })
   if (filteredList.length === 0) {
-    console.log("no matchie")
     $(".noMatches").css("visibility", "inherit")
-    makeTable("no matches", tableDiv)
+    opts.data = ""
+    makeTable(opts)
   }
   else $(".noMatches").css("visibility", "hidden")
-  makeTable(filteredList, tableDiv) 
-  return filteredList
+    opts.data = filteredList
+    makeTable(opts) 
+    //return filteredList
 }
 
-function sortThings(data, sorter, sorted, tableDiv) {
-  data.sort(function(a,b){
+function sortThings(opts, sorter, sorted) {
+  opts.data.sort(function(a,b){
     if (a[sorter]<b[sorter]) return -1
     if (a[sorter]>b[sorter]) return 1
     return 0
   })
-  if (sorted === "descending") data.reverse()
-  makeTable(data, tableDiv)
+  if (sorted === "descending") opts.data.reverse()
+  makeTable(opts)
   var header 
-  $(tableDiv + " .tHeader").each(function(i, el){
+  $(opts.tableDiv + " .tHeader").each(function(i, el){
     var contents = resolveDataTitle($(el).text())
     if (contents === sorter) header = el
   })
@@ -70,37 +73,39 @@ function sendToSort(event) {
 
 $(document).on("click", ".tHeader", sendToSort)
 
-function makeTable(data, targetDiv, showRows) {
-  if (!showRows) table(data, targetDiv)
-  var allRows = data.length
-  var totalPages = Math.floor(allRows / showRows)
+function makeTable(opts) {
+  if (!opts.pagination) table(opts.data, targetDiv)
+  var allRows = opts.data.length
+  var totalPages = Math.floor(allRows / opts.pagination)
   var currentPage = 1
-  var currentStart = (currentPage * showRows) - showRows
-  var currentEnd = currentPage * showRows
-  var currentRows = data.splice(currentStart, currentEnd)
-  table(currentRows, targetDiv)
-  setPreNext(targetDiv, currentPage, currentPage, totalPages)
+  var currentStart = (currentPage * opts.pagination) - opts.pagination
+  var currentEnd = currentPage * opts.pagination
+  var currentRows = opts.data.slice(currentStart, currentEnd)
+  table(currentRows, opts.tableDiv)
+  setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
+
+  // if data is less than pagintion, don't display pagination
+  // this is good for doing searches that end up returning a few results toooooo
   
   $(document).on("click", (".pagination-next"), function() { 
-    console.log("clicked next!")
+    // if (opts.filterDiv && $(opts.filterDiv).val().length === 0 ) console.log("unempty filter!")
     currentPage = currentPage + 1
     var nextPage = currentPage + 1
-    currentStart = (currentPage * showRows) - showRows
-    currentEnd = currentPage * showRows
-    currentRows = data.slice(currentStart, currentEnd)
-    table(currentRows, targetDiv)
-    setPreNext(targetDiv, currentPage, currentPage, totalPages)
+    currentStart = (currentPage * opts.pagination) - opts.pagination
+    currentEnd = currentPage * opts.pagination
+    currentRows = opts.data.slice(currentStart, currentEnd)
+    table(currentRows, opts.tableDiv)
+    setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
   })
 
   $(document).on("click", (".pagination-pre"), function() { 
-    console.log("clicked next!")
     currentPage = currentPage - 1
     var nextPage = currentPage + 1
-    currentStart = (currentPage * showRows) - showRows
-    currentEnd = currentPage * showRows
-    currentRows = data.slice(currentStart, currentEnd) 
-    table(currentRows, targetDiv)
-    setPreNext(targetDiv, currentPage, currentPage, totalPages)
+    currentStart = (currentPage * opts.pagination) - opts.pagination
+    currentEnd = currentPage * opts.pagination
+    currentRows = opts.data.slice(currentStart, currentEnd) 
+    table(currentRows, opts.tableDiv)
+    setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
   })
 }
 
@@ -110,21 +115,6 @@ function setPreNext(targetDiv, currentPage, currentPage, totalPages) {
     " <a class='pagination-next'>Next</a></p></div>" )
 }
 
-function rowRanges(allRows, showRows) {
-  var pages = Math.ceil(allRows / showRows)
-  var rowRanges = []
-  for (var i = 1; i <=   pages; i++) { 
-    var start = (i * showRows) - 1
-    if (i === 1) var start = 0
-    var end = i * showRows
-    var range = {}
-    range[i] = {"start": start, "end": end}
-    rowRanges.push(range)
-  }
-  console.log("ranges!", rowRanges)
-  return rowRanges
-}
-
 function table(data, targetDiv) {
   var templateID = targetDiv.replace("#", "")
   var tableContents = ich[templateID]({
@@ -132,49 +122,6 @@ function table(data, targetDiv) {
   })
   $(targetDiv).html(tableContents)
 }
-
-$(".pagination-next").on("click", function() { 
-  console.log("clicked next!")
-  var currentPage = $(".table-pagination").attr("pageno")
-  var nextPage = currentPage + 1
-  pageno = nextPage
-  var lastRange = currentPage * pagination
-  var displayRange = pageno
-})
-
-// function makeTable(data, targetDiv, pagination) {
-//   if (!pagination) var showRows = data.length
-//   var showRows = pagination
-//   var allRows = data.length
-//   var pages = allRows / showRows
-//   var pageno = 1
-//   console.log("show rows", showRows, "allRows", allRows, "pages", pages)
-//   var templateID = targetDiv.replace("#", "")
-//   var tableContents = ich[templateID]({
-//     rows: data.slice(0, showRows)
-//   })
-//   $(targetDiv).html(tableContents)
-//   if (pagination) {
-//     $(targetDiv).append("<span pageno='1' class='table-pagination'>Showing " 
-//       + showRows + "of " + allRows + "<a class='pagination-pre'> Previous</a> <a class='pagination-next'>Next</a> </p>" )
-//   }
-//   if (pageno === 1) $(".pagination-pre").css("display", "none")
-//   $(".pagination-pre").on("click", function() { 
-//     console.log("clicked!")
-//     var currentPage = $(".table-pagination").attr("pageno")
-//     var previousPage = currentPage - 1
-//     pageno = previousPage
-//   })
-//   $(".pagination-next").on("click", function() { 
-//     console.log("clicked next!")
-//     var currentPage = $(".table-pagination").attr("pageno")
-//     var nextPage = currentPage + 1
-//     pageno = nextPage
-//     var lastRange = currentPage * pagination
-//     var displayRange = pageno
-//   })
-// }
-
 
 // tables
 exports.searchTable = searchTable
