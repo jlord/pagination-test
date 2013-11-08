@@ -9,20 +9,23 @@ function exportFunctions(exports) {
 // Delete isn't working in search
 
 function initiateTableFilter(opts) {
-  var origData = opts.data
+  // console.log("Orig Data is", opts.data.length)
+  // var origData = opts.data
   $('.clear').on("click", function() { 
     $(this.id + ".noMatches").css("visibility", "hidden")
     $(this.id + opts.filterDiv).val("")
-    opts.data = origData
+    // opts.data = origData
     makeTable(opts)
   })
   $(opts.filterDiv).keyup(function(e) {
     var text = $(e.target).val()
+    console.log(opts.data.length, text)
     searchTable(opts, text)
   })
 }
 
 function searchTable(opts, searchTerm) {
+  // console.log("searching", opts.data.length)
   var filteredList = []
   opts.data.forEach(function(object) {
     var stringObject = JSON.stringify(object).toLowerCase()
@@ -30,14 +33,12 @@ function searchTable(opts, searchTerm) {
   })
   if (filteredList.length === 0) {
     $(".noMatches").css("visibility", "inherit")
-    opts.data = ""
-    makeTable(opts)
-    clearPreNExt()
+    makeTable(opts, filteredList)
   }
-  else $(".noMatches").css("visibility", "hidden")
-    opts.data = filteredList
-    makeTable(opts) 
-    //return filteredList
+  else {
+    $(".noMatches").css("visibility", "hidden")
+    makeTable(opts, filteredList)
+  } 
 }
 
 function sortThings(opts, sorter, sorted) {
@@ -62,21 +63,6 @@ function resolveDataTitle(string) {
   return adjusted
 }
 
-// function sendToSort(event) {
-//   var tableDiv = "#" + $(event.target).closest("div").attr("id")
-//   console.log("came from this table",tableDiv)
-//   var sorted = $(event.target).attr("data-sorted")
-//   if (sorted) {
-//     if (sorted === "descending") sorted = "ascending"
-//     else sorted = "descending"
-//   }
-//   else { sorted = "ascending" }
-//   var sorter = resolveDataTitle(event.target.innerHTML)
-//   var sortInfo = {"sorter": sorter, "sorted": sorted, "tableDiv": tableDiv}
-//   console.log(sortInfo)
-//   return sortInfo
-// }
-
 function initiateTableSorter(options) {
   var sortInfo = $(document).on("click", ".tHeader", sendToSort)
 
@@ -96,19 +82,19 @@ function initiateTableSorter(options) {
   }
 }
 
-function makeTable(opts) {
-  if (!opts.pagination) table(opts.data, targetDiv)
-  var allRows = opts.data.length
+function makeTable(opts, filteredList) {
+  if (filteredList) var data = filteredList
+    else var data = opts.data
+      
+  if (!opts.pagination) table(data, targetDiv)
+  var allRows = data.length
   var totalPages = Math.floor(allRows / opts.pagination)
   var currentPage = 1
   var currentStart = (currentPage * opts.pagination) - opts.pagination
   var currentEnd = currentPage * opts.pagination
-  var currentRows = opts.data.slice(currentStart, currentEnd)
+  var currentRows = data.slice(currentStart, currentEnd)
   table(currentRows, opts.tableDiv)
   if (opts.data.length > opts.pagination) setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
-
-  // if data is less than pagintion, don't display pagination
-  // this is good for doing searches that end up returning a few results toooooo
   
   $(document).on("click", (".pagination-next"), function() { 
     // if (opts.filterDiv && $(opts.filterDiv).val().length === 0 ) console.log("unempty filter!")
@@ -116,7 +102,7 @@ function makeTable(opts) {
     var nextPage = currentPage + 1
     currentStart = (currentPage * opts.pagination) - opts.pagination
     currentEnd = currentPage * opts.pagination
-    currentRows = opts.data.slice(currentStart, currentEnd)
+    currentRows = data.slice(currentStart, currentEnd)
     table(currentRows, opts.tableDiv)
     setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
   })
@@ -126,7 +112,7 @@ function makeTable(opts) {
     var nextPage = currentPage + 1
     currentStart = (currentPage * opts.pagination) - opts.pagination
     currentEnd = currentPage * opts.pagination
-    currentRows = opts.data.slice(currentStart, currentEnd) 
+    currentRows = data.slice(currentStart, currentEnd) 
     table(currentRows, opts.tableDiv)
     setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
   })
@@ -139,7 +125,6 @@ function setPreNext(targetDiv, currentPage, currentPage, totalPages) {
 }
 
 function clearPreNExt() {
-  console.log("I got called to clear!")
   $(".table-pagination").attr("display", "none")
 }
 
