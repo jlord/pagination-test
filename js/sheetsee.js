@@ -6,6 +6,8 @@ function exportFunctions(exports) {
 //
 // // // // // // // // // // // // // // // // // // // // // // // //  // //
 
+// Delete isn't working in search
+
 function initiateTableFilter(opts) {
   var origData = opts.data
   $('.clear').on("click", function() { 
@@ -30,6 +32,7 @@ function searchTable(opts, searchTerm) {
     $(".noMatches").css("visibility", "inherit")
     opts.data = ""
     makeTable(opts)
+    clearPreNExt()
   }
   else $(".noMatches").css("visibility", "hidden")
     opts.data = filteredList
@@ -38,6 +41,7 @@ function searchTable(opts, searchTerm) {
 }
 
 function sortThings(opts, sorter, sorted) {
+  console.log("here is data", opts.data)
   opts.data.sort(function(a,b){
     if (a[sorter]<b[sorter]) return -1
     if (a[sorter]>b[sorter]) return 1
@@ -58,20 +62,39 @@ function resolveDataTitle(string) {
   return adjusted
 }
 
-function sendToSort(event) {
-  var tableDiv = "#" + $(event.target).closest("div").attr("id")
-  console.log("came from this table",tableDiv)
-  var sorted = $(event.target).attr("data-sorted")
-  if (sorted) {
-    if (sorted === "descending") sorted = "ascending"
-    else sorted = "descending"
-  }
-  else { sorted = "ascending" }
-  var sorter = resolveDataTitle(event.target.innerHTML)
-  sortThings(gData, sorter, sorted, tableDiv)
-}
+// function sendToSort(event) {
+//   var tableDiv = "#" + $(event.target).closest("div").attr("id")
+//   console.log("came from this table",tableDiv)
+//   var sorted = $(event.target).attr("data-sorted")
+//   if (sorted) {
+//     if (sorted === "descending") sorted = "ascending"
+//     else sorted = "descending"
+//   }
+//   else { sorted = "ascending" }
+//   var sorter = resolveDataTitle(event.target.innerHTML)
+//   var sortInfo = {"sorter": sorter, "sorted": sorted, "tableDiv": tableDiv}
+//   console.log(sortInfo)
+//   return sortInfo
+// }
 
-$(document).on("click", ".tHeader", sendToSort)
+function initiateTableSorter(options) {
+  var sortInfo = $(document).on("click", ".tHeader", sendToSort)
+
+  function sendToSort(event) {
+    var tableDiv = "#" + $(event.target).closest("div").attr("id")
+    console.log("came from this table",tableDiv)
+    var sorted = $(event.target).attr("data-sorted")
+    if (sorted) {
+      if (sorted === "descending") sorted = "ascending"
+      else sorted = "descending"
+    }
+    else { sorted = "ascending" }
+    var sorter = resolveDataTitle(event.target.innerHTML)
+    var sortInfo = {"sorter": sorter, "sorted": sorted, "tableDiv": tableDiv}
+    console.log(sortInfo)
+    sortThings(options, sorter, sorted, tableDiv)
+  }
+}
 
 function makeTable(opts) {
   if (!opts.pagination) table(opts.data, targetDiv)
@@ -82,7 +105,7 @@ function makeTable(opts) {
   var currentEnd = currentPage * opts.pagination
   var currentRows = opts.data.slice(currentStart, currentEnd)
   table(currentRows, opts.tableDiv)
-  setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
+  if (opts.data.length > opts.pagination) setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
 
   // if data is less than pagintion, don't display pagination
   // this is good for doing searches that end up returning a few results toooooo
@@ -110,9 +133,14 @@ function makeTable(opts) {
 }
 
 function setPreNext(targetDiv, currentPage, currentPage, totalPages) {
-  $(targetDiv).append("<div pageno='" + currentPage + "'" + "class='table-pagination'>Showing page " 
+  $(targetDiv).append("<div id='Pagination' pageno='" + currentPage + "'" + "class='table-pagination'>Showing page " 
     + currentPage + " of " + totalPages + " <a class='pagination-pre'>Previous</a>" +
     " <a class='pagination-next'>Next</a></p></div>" )
+}
+
+function clearPreNExt() {
+  console.log("I got called to clear!")
+  $(".table-pagination").attr("display", "none")
 }
 
 function table(data, targetDiv) {
@@ -127,9 +155,10 @@ function table(data, targetDiv) {
 exports.searchTable = searchTable
 exports.initiateTableFilter = initiateTableFilter
 exports.makeTable = makeTable
-exports.sendToSort = sendToSort
+// exports.sendToSort = sendToSort
 exports.resolveDataTitle = resolveDataTitle
 exports.sortThings = sortThings
+exports.initiateTableSorter = initiateTableSorter
 }
 var Sheetsee = {}
 exportFunctions(Sheetsee)
