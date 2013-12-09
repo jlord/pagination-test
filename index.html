@@ -29,6 +29,9 @@
 		<div class="container">
 			<input id="tableFilter" type="text" placeholder="filter by.."></input>
 			<div id="hackSpotsTable"></div>
+
+			<!-- <input id="tableFilter2" type="text" placeholder="filter by.."></input>
+			<div id="tabletwo"></div> -->
 		</div>
 
 	</div><!-- end wrapper -->
@@ -43,57 +46,6 @@
 	  </table>
 	</script>
 
-	<script id="latestSpot" type="text/html">
-			{{#rows}}
-				<h4 class="fauxButton">MOST RECENT SPOT</h4>
-				<h2>{{name}}</h2>
-				<p class="colorText">{{address}}<p>
-				<p class="colorText">{{city}}, {{state}} {{#postcode}}, {{postcode}} {{/postcode}}</p>
-				<ul>
-			  	<li><span class="category">Wifi:</span> {{wifipassword}}</li>
-			  	<li><span class="category">Outlets:</span> {{outlets}}</li>
-			  	<li><span class="category">Couch:</span> {{couch}}</li>
-			  	<li><span class="category">Large Table:</span> {{largetable}}</li>
-			  	<li><span class="category">Outdoor Seating:</span> {{outdoorseating}}</li>
-			  	<li><span class="category">Brewing:</span> {{brewing}}</li>
-			  	<li><span class="category">Contributed By:</span> <a href="http://www.twitter.com/{{contributerstwitter}}" target="_blank">@{{contributerstwitter}}</a></li>
-		  	</ul>
-		  	<ul>
-		  		<li><a href="https://maps.google.com/maps?q={{address}},{{city}},{{state}}" target="_blank">View in Google Maps</a></li>
-		  		<li><a href="http://www.yelp.com/search?find_desc={{name}}&find_loc={{city}},{{state}}" target="_blank">Find on Yelp</a></li>
-		  	</ul>
-		  {{/rows}}
-	</script>
-
-	<script id="theNumberofSpots" type="text/html">
-		<p><strong><span class="red-text">{{numberOfSpots}}</span> hack spots strong!</p>
-	</script>
-
-	<script id="popUps" type="text/html">
-		<h2>{{ name }}</h2>
-	</script>
-
-	<script id="selectedSpot" type="text/html">
-		{{#rows}}
-			<h4 class="fauxButton">SELECTED SPOT</h4>
-			<h2>{{name}}</h2>
-			<p class="colorText">{{address}}<p>
-			<p class="colorText">{{city}}, {{state}} {{#postcode}}, {{postcode}} {{/postcode}}</p>
-			<ul>
-		  	<li><span class="category">Wifi:</span> {{wifipassword}}</li>
-		  	<li><span class="category">Outlets:</span> {{outlets}}</li>
-		  	<li><span class="category">Couch:</span> {{couch}}</li>
-		  	<li><span class="category">Large Table:</span> {{largetable}}</li>
-		  	<li><span class="category">Outdoor Seating:</span> {{outdoorseating}}</li>
-		  	<li><span class="category">Brewing:</span> {{brewing}}</li>
-	  	</ul>
-	  	<ul>
-	  		<li><a href="https://maps.google.com/maps?q={{address}},{{city}},{{state}}" target="_blank">View in Google Maps</a></li>
-	  		<li><a href="http://www.yelp.com/search?find_desc={{name}}&find_loc={{city}},{{state}}" target="_blank">Find on Yelp</a></li>
-	  	</ul>
-	  {{/rows}}
-	</script>
-
 	<script type="text/javascript">
 	  document.addEventListener('DOMContentLoaded', function() {
 	  	var gData
@@ -105,14 +57,24 @@
 	  	gData = data
 	  	// make the table, and the search bar
 	  	var tableOptions = {
-	  											"data": gData,
-	  											"tableDiv": "#hackSpotsTable",
-	  											"pagination": 10,
-	  											"filterDiv": "#tableFilter"
-	  											 }
+								"data": gData,
+								"tableDiv": "#hackSpotsTable",
+								"pagination": 10,
+								"filterDiv": "#tableFilter"
+								 }
 	  	Sheetsee.makeTable(tableOptions)
 	  	Sheetsee.initiateTableFilter(tableOptions)
 	  	Sheetsee.initiateTableSorter(tableOptions)
+
+	  	// var tableOptions2 = { "data": gData,
+				// 				"tableDiv": "#tabletwo",
+				// 				"pagination": 10,
+				// 				"filterDiv": "#tableFilter2"
+				// 				 }
+	  	// Sheetsee.makeTable(tableOptions2)
+	  	// Sheetsee.initiateTableFilter(tableOptions2)
+	  	// Sheetsee.initiateTableSorter(tableOptions2)
+
  	}
 
 	</script>
