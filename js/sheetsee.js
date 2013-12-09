@@ -11,7 +11,9 @@ function exportFunctions(exports) {
 function initiateTableFilter(opts) {
   // console.log("Orig Data is", opts.data.length)
   // var origData = opts.data
-  $('.clear').on("click", function() { 
+  console.log("optsfilterdiv", opts.filterDiv)
+  injectFilterHTML(opts.filterDiv)
+  $('.clear').on("click", function() {
     $(this.id + ".noMatches").css("visibility", "hidden")
     $(this.id + opts.filterDiv).val("")
     // opts.data = origData
@@ -22,6 +24,12 @@ function initiateTableFilter(opts) {
     console.log(opts.data.length, text)
     searchTable(opts, text)
   })
+}
+
+function injectFilterHTML(filterDiv) {
+  console.log(filterDiv)
+  $("<span class='clear button'>Clear</span>" +
+  "<span class='noMatches'>no matches</span>").insertAfter(filterDiv)
 }
 
 function searchTable(opts, searchTerm) {
@@ -38,7 +46,7 @@ function searchTable(opts, searchTerm) {
   else {
     $(".noMatches").css("visibility", "hidden")
     makeTable(opts, filteredList)
-  } 
+  }
 }
 
 function sortThings(opts, sorter, sorted) {
@@ -50,7 +58,7 @@ function sortThings(opts, sorter, sorted) {
   })
   if (sorted === "descending") opts.data.reverse()
   makeTable(opts)
-  var header 
+  var header
   $(opts.tableDiv + " .tHeader").each(function(i, el){
     var contents = resolveDataTitle($(el).text())
     if (contents === sorter) header = el
@@ -85,7 +93,7 @@ function initiateTableSorter(options) {
 function makeTable(opts, filteredList) {
   if (filteredList) var data = filteredList
     else var data = opts.data
-      
+
   if (!opts.pagination) table(data, targetDiv)
   var allRows = data.length
   var totalPages = Math.floor(allRows / opts.pagination)
@@ -95,8 +103,8 @@ function makeTable(opts, filteredList) {
   var currentRows = data.slice(currentStart, currentEnd)
   table(currentRows, opts.tableDiv)
   if (opts.data.length > opts.pagination) setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
-  
-  $(document).on("click", (".pagination-next"), function() { 
+
+  $(document).on("click", (".pagination-next"), function() {
     // if (opts.filterDiv && $(opts.filterDiv).val().length === 0 ) console.log("unempty filter!")
     currentPage = currentPage + 1
     var nextPage = currentPage + 1
@@ -107,19 +115,19 @@ function makeTable(opts, filteredList) {
     setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
   })
 
-  $(document).on("click", (".pagination-pre"), function() { 
+  $(document).on("click", (".pagination-pre"), function() {
     currentPage = currentPage - 1
     var nextPage = currentPage + 1
     currentStart = (currentPage * opts.pagination) - opts.pagination
     currentEnd = currentPage * opts.pagination
-    currentRows = data.slice(currentStart, currentEnd) 
+    currentRows = data.slice(currentStart, currentEnd)
     table(currentRows, opts.tableDiv)
     setPreNext(opts.tableDiv, currentPage, currentPage, totalPages)
   })
 }
 
 function setPreNext(targetDiv, currentPage, currentPage, totalPages) {
-  $(targetDiv).append("<div id='Pagination' pageno='" + currentPage + "'" + "class='table-pagination'>Showing page " 
+  $(targetDiv).append("<div id='Pagination' pageno='" + currentPage + "'" + "class='table-pagination'>Showing page "
     + currentPage + " of " + totalPages + " <a class='pagination-pre'>Previous</a>" +
     " <a class='pagination-next'>Next</a></p></div>" )
 }

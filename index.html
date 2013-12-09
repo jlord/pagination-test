@@ -1,7 +1,7 @@
 		<html>
 	<head>
 		<title>Hack Spots</title>
-		<script type="text/javascript" src="js/ICanHaz.js"></script> 
+		<script type="text/javascript" src="js/ICanHaz.js"></script>
 		<script type="text/javascript" src='http://api.tiles.mapbox.com/mapbox.js/v1.4.0/mapbox.js'></script>
 		<script type="text/javascript" src='js/jquery.js '></script>
 		<script type="text/javascript" src='js/tabletop.js'></script>
@@ -12,9 +12,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<link href='http://api.tiles.mapbox.com/mapbox.js/v1.4.0/mapbox.css' rel='stylesheet' />
 		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic'>
-		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Amatic+SC:400,700'>		
-		<link media="screen" rel="stylesheet" type="text/css" href="css/style.css"> 
-		<link media="screen" rel="stylesheet" type="text/css" href="css/site.css"> 
+		<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Amatic+SC:400,700'>
+		<link media="screen" rel="stylesheet" type="text/css" href="css/style.css">
+		<link media="screen" rel="stylesheet" type="text/css" href="css/site.css">
 		<link rel="stylesheet" href="css/MarkerCluster.css" />
 		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
 	</head>
@@ -25,14 +25,12 @@
 <body>
 	<div id="wrapper">
 		<h1>Hack Spots</h1>
-		
+
 		<div class="container">
 			<input id="tableFilter" type="text" placeholder="filter by.."></input>
-			<span class="clear button">Clear</span> <span class="resetMap button">Reset Map</span>
-			<span class="noMatches">no matches</span>
 			<div id="hackSpotsTable"></div>
 		</div>
-		
+
 	</div><!-- end wrapper -->
 
 	<script id="hackSpotsTable" type="text/html">
@@ -100,15 +98,15 @@
 	  document.addEventListener('DOMContentLoaded', function() {
 	  	var gData
 	  	var URL = "0Ao5u1U6KYND7dFVkcnJRNUtHWUNKamxoRGg4ZzNiT3c"
-			Tabletop.init( { key: URL, callback: showInfo, simpleSheet: true } ) 
-		}) 
+			Tabletop.init( { key: URL, callback: showInfo, simpleSheet: true } )
+		})
 
 	  function showInfo(data) {
 	  	gData = data
 	  	// make the table, and the search bar
 	  	var tableOptions = {
-	  											"data": gData, 
-	  											"tableDiv": "#hackSpotsTable", 
+	  											"data": gData,
+	  											"tableDiv": "#hackSpotsTable",
 	  											"pagination": 10,
 	  											"filterDiv": "#tableFilter"
 	  											 }
